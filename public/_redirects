@@ -1,0 +1,2 @@
+# Each interview link (/i/<id>) is the same page; the page reads the id from the path.
+/i/*  /index.html  200

@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Interview Admin</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#5c5f63; --line:#e3e3e3; --bg:#f6f6f6; --card:#fff;
+    --accent:#1d4ed8; --accent-tint:#eff6ff; --accent-ink:#1e40af; --err:#b42318; --ok:#15803d; --ok-tint:#ecfdf3;
+    --r:8px;
+  }
+  *{box-sizing:border-box;margin:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  button,input,select{font:inherit;color:inherit;}
+  button{cursor:pointer;}
+  [hidden]{display:none !important;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .wrap{max-width:980px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left));display:grid;gap:20px;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  h1{font-size:1.5rem;line-height:1.25;}
+  h2{font-size:1.125rem;line-height:1.3;}
+  h3{font-size:1rem;}
+  .host{color:var(--muted);font-weight:600;font-size:.875rem;}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{min-height:40px;padding:0 16px;border-radius:20px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;}
+  .btn.ghost{background:#fff;color:var(--accent-ink);}
+  .btn.small{min-height:34px;padding:0 12px;font-size:.875rem;}
+  .btn.danger{border-color:var(--err);color:var(--err);background:#fff;}
+  .btn:disabled{opacity:.6;cursor:default;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px;min-width:0;}
+  .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--accent-tint);color:var(--accent-ink);font-weight:700;font-size:.8125rem;white-space:nowrap;}
+  label{display:grid;gap:4px;font-weight:600;font-size:.875rem;}
+  input,select{height:40px;padding:0 10px;border:1px solid #8a8d91;border-radius:var(--r);background:#fff;min-width:0;width:100%;}
+  input[readonly]{background:var(--bg);}
+  .feedback{padding:10px 14px;border-radius:var(--r);font-weight:600;}
+  .feedback.ok{background:var(--ok-tint);color:var(--ok);}
+  .feedback.err{background:#fef3f2;color:var(--err);}
+  .err{color:var(--err);font-weight:600;font-size:.875rem;}
+  .login{max-width:360px;margin:12vh auto 0;}
+  .seg{display:inline-flex;border:1px solid var(--accent);border-radius:20px;overflow:hidden;}
+  .seg button{border:0;background:#fff;color:var(--accent-ink);padding:6px 16px;font-weight:700;}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:#fff;}
+  .day-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end;}
+  .url-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .url-row input{flex:1 1 260px;font-family:ui-monospace,Menlo,monospace;font-size:.875rem;}
+  .message{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--bg);padding:10px 12px;border-radius:var(--r);}
+  .message p{flex:1 1 280px;min-width:0;overflow-wrap:anywhere;font-size:.875rem;}
+  .day-head{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:12px;}
+  ul.slots{list-style:none;padding:0;display:grid;gap:6px;}
+  .slot{display:grid;grid-template-columns:84px 1fr auto;gap:10px;align-items:center;padding:6px 0;}
+  .slot.past{opacity:.55;}
+  .slot.seat{padding-left:94px;grid-template-columns:1fr auto;}
+  .time{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap;}
+  .who{display:grid;min-width:0;overflow-wrap:anywhere;}
+  .who span{color:var(--muted);font-size:.875rem;}
+  .who.open{color:var(--muted);}
+  details.past summary{cursor:pointer;font-weight:700;padding:6px 0;}
+  details.past .panel{margin-top:12px;}
+  .settings-group{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px;}
+  .store-row{display:grid;grid-template-columns:1fr 1.6fr 1.6fr auto;gap:8px;align-items:end;}
+  .text-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;}
+  .rule{display:grid;grid-template-columns:minmax(150px,1fr) 90px auto;gap:8px;align-items:center;font-weight:600;}
+  .rule span{color:var(--muted);font-weight:400;font-size:.875rem;}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.8125rem;background:var(--bg);padding:1px 5px;border-radius:4px;}
+  .note{color:var(--muted);font-size:.875rem;}
+  .empty{color:var(--muted);text-align:center;padding:24px;}
+  @media (max-width:640px){
+    .store-row{grid-template-columns:1fr;}
+    .slot{grid-template-columns:76px 1fr;}
+    .slot > button{grid-column:2;justify-self:start;}
+    .slot.seat{padding-left:0;grid-template-columns:1fr;}
+    .rule{grid-template-columns:1fr 90px;}
+    .rule span{grid-column:1 / -1;}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="panel login" id="login" hidden>
+    <h1>Interview admin</h1>
+    <form id="loginForm" style="display:grid;gap:12px">
+      <label for="password">Password<input id="password" type="password" autocomplete="current-password" required></label>
+      <p class="err" id="loginError" hidden></p>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+  </section>
+
+  <div id="app" hidden style="display:grid;gap:20px">
+    <header>
+      <div><div class="host" id="hostName"></div><h1>Interview links</h1></div>
+      <div class="bar">
+        <button class="btn" type="button" id="newLink">New link</button>
+        <button class="btn ghost" type="button" id="openSettings">Settings</button>
+        <button class="btn ghost" type="button" id="refresh">Refresh</button>
+        <button class="btn ghost" type="button" id="logout">Sign out</button>
+      </div>
+    </header>
+    <p class="feedback" id="feedback" role="status" hidden></p>
+
+    <form class="panel" id="linkForm" hidden>
+      <div class="panel-head"><div><div class="eyebrow" id="formEyebrow">New link</div><h2 id="formTitle">New interview link</h2></div></div>
+      <div class="day-row" id="storeRow">
+        <label for="linkStore">Location<select id="linkStore"></select></label>
+        <div style="display:grid;gap:4px"><span style="font-weight:600;font-size:.875rem">Kind</span>
+          <div class="seg" id="kind"><button type="button" data-kind="single" aria-pressed="true">One-on-one</button><button type="button" data-kind="group" aria-pressed="false">Group</button></div>
+        </div>
+      </div>
+      <div id="days" style="display:grid;gap:10px"></div>
+      <div><button class="btn ghost small" type="button" id="addDay">+ Add day</button></div>
+      <p class="err" id="formError" hidden></p>
+      <div class="bar"><button class="btn" type="submit" id="saveLink">Generate link</button><button class="btn ghost" type="button" id="cancelLink">Cancel</button></div>
+    </form>
+
+    <form class="panel" id="settings" hidden>
+      <div class="panel-head"><div><div class="eyebrow">Settings</div><h2>Booking page, emails and rules</h2></div></div>
+      <p class="note">Saved to the site right away, no deploy needed. A text left at its default stays linked to the default.</p>
+      <div id="settingsFields" style="display:grid;gap:14px"></div>
+      <p class="err" id="settingsError" hidden></p>
+      <div class="bar"><button class="btn" type="submit" id="saveSettings">Save settings</button><button class="btn ghost" type="button" id="closeSettings">Close</button></div>
+    </form>
+
+    <div id="links" style="display:grid;gap:16px"></div>
+    <p class="empty" id="emptyState" hidden>No interview links yet. Click "New link" to create the first one.</p>
+  </div>
+</main>
+<script>
+const TZ = 'America/Los_Angeles';
+const dayFormat = new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'short', month: 'short', day: 'numeric' });
+const timeFormat = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' });
+const dateKey = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+const $ = (id) => document.getElementById(id);
+const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+let data = { links: [], bookings: [], settings: { stores: {}, rules: {}, page: {}, email: {} }, defaults: {}, placeholders: [] };
+let bookingsBySlot = {}; // open bookings per slot id, in booking order
+let kind = 'single';
+let formLinkId = null; // set while adding days to an existing link
+const storeName = (key) => data.settings.stores[key]?.name || key;
+
+async function api(path, body) {
+  const res = await fetch('/api/admin/' + path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {});
+  const payload = await res.json().catch(() => ({}));
+  if (res.status === 401 && path !== 'login') { showLogin(); throw new Error(payload.error || 'Sign in first.'); }
+  if (!res.ok) throw new Error(payload.error || 'The site did not answer. Try again.');
+  return payload;
+}
+
+function feedback(message = '', ok = true) {
+  const el = $('feedback');
+  el.hidden = !message;
+  el.textContent = message;
+  el.className = 'feedback ' + (ok ? 'ok' : 'err');
+}
+
+function showLogin() {
+  // Nothing from the last session stays on screen for the next person at this device.
+  for (const id of ['settings', 'linkForm']) $(id).hidden = true;
+  feedback();
+  $('app').hidden = true;
+  $('login').hidden = false;
+  $('password').focus();
+}
+
+async function load() {
+  try {
+    data = await api('overview');
+    $('login').hidden = true;
+    $('app').hidden = false;
+    $('hostName').textContent = data.settings.page.host;
+    renderStoreOptions();
+    renderLinks();
+  } catch (err) {
+    if (!$('login').hidden) return;
+    feedback(err.message, false);
+  }
+}
+
+// ---- New link / add days
+function dayRowHtml() {
+  const today = dateKey.format(new Date());
+  const date = `<label>Date<input type="date" name="date" min="${today}" required></label>`;
+  const remove = '<button type="button" class="btn ghost small" data-remove-day>Remove</button>';
+  if (kind === 'group') {
+    return `<div class="day-row">${date}
+      <label>Start<input type="time" name="time" value="10:00" step="900" required></label>
+      <label>Seats<input type="number" name="seats" value="15" min="2" max="60" required></label>
+      <label>Length<select name="minutes"><option value="60">1 hour</option><option value="90">1.5 hours</option><option value="120" selected>2 hours</option><option value="180">3 hours</option></select></label>
+      ${remove}</div>`;
+  }
+  return `<div class="day-row">${date}
+    <label>From<input type="time" name="from" value="14:00" step="900" required></label>
+    <label>To<input type="time" name="to" value="16:00" step="900" required></label>
+    ${remove}</div>`;
+}
+
+function setKind(next) {
+  kind = next;
+  document.querySelectorAll('#kind button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === next)));
+  $('days').innerHTML = dayRowHtml();
+}
+
+function openForm(link = null) {
+  formLinkId = link?.id || null;
+  $('formTitle').textContent = link ? `Add days to the ${storeName(link.store)} ${link.kind === 'group' ? 'group' : 'one-on-one'} link` : 'New interview link';
+  $('formEyebrow').textContent = link ? 'Add days' : 'New link';
+  $('storeRow').hidden = Boolean(link);
+  $('saveLink').textContent = link ? 'Add days' : 'Generate link';
+  $('formError').hidden = true;
+  setKind(link?.kind || 'single');
+  $('linkForm').hidden = false;
+  $('linkForm').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  $('linkForm').querySelector('input[name="date"]').focus({ preventScroll: true });
+}
+
+async function saveForm(event) {
+  event.preventDefault();
+  const days = [...document.querySelectorAll('#days .day-row')].map((row) =>
+    Object.fromEntries([...row.querySelectorAll('input, select')].map((field) => [field.name, field.value])));
+  const button = $('saveLink');
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Saving…';
+  $('formError').hidden = true;
+  try {
+    const added = Boolean(formLinkId);
+    const { link } = added ? await api('links/days', { linkId: formLinkId, days }) : await api('links', { store: $('linkStore').value, kind, days });
+    $('linkForm').hidden = true;
+    formLinkId = null;
+    await load();
+    feedback(added ? 'Days added. The link stays the same.' : 'Link ready. Copy the invite message below.');
+    document.querySelector(`[data-link-id="${link.id}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  } catch (err) {
+    $('formError').textContent = err.message;
+    $('formError').hidden = false;
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
+
+function renderStoreOptions() {
+  const select = $('linkStore');
+  const current = select.value;
+  select.innerHTML = Object.entries(data.settings.stores).map(([key, s]) => `<option value="${esc(key)}">${esc(s.name)}</option>`).join('');
+  if (data.settings.stores[current]) select.value = current;
+}
+
+// ---- Links and bookings
+const phone = (value) => {
+  const digits = String(value).replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+  return digits.length === 10 ? `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}` : value;
+};
+
+function personHtml(booking, number) {
+  return `<span class="who"><strong>${esc(`${number ? number + '. ' : ''}${booking.firstName} ${booking.lastName}`)}</strong>
+    <span>${esc(phone(booking.phone))} · ${esc(booking.email)}</span></span>`;
+}
+
+const cancelButton = (booking, past) => past ? '' : `<button type="button" class="btn danger small" data-cancel="${esc(booking.token)}" data-name="${esc(booking.firstName + ' ' + booking.lastName)}">Cancel booking</button>`;
+
+function slotHtml(slot, bookings, now) {
+  const past = Date.parse(slot.start) < now;
+  const time = timeFormat.format(new Date(slot.start));
+  const remove = !bookings.length && !past ? `<button type="button" class="btn ghost small" data-remove-slot="${esc(slot.id)}">Remove</button>` : '';
+  if (slot.seats > 1) {
+    // Group: everyone arrives at the start time and is interviewed in booking order.
+    const seats = bookings.map((b, i) => `<li class="slot seat${past ? ' past' : ''}">${personHtml(b, i + 1)}${cancelButton(b, past)}</li>`).join('');
+    return `<li class="slot${past ? ' past' : ''}"><span class="time">${time}</span>
+      <span class="who"><strong>Group, ${bookings.length} of ${slot.seats} booked</strong><span>Up to ${slot.minutes / 60} hour${slot.minutes === 60 ? '' : 's'}, interviewed in booking order</span></span>${remove}</li>${seats}`;
+  }
+  const who = bookings.length ? personHtml(bookings[0]) : '<span class="who open">Open</span>';
+  return `<li class="slot${past ? ' past' : ''}"><span class="time">${time}</span>${who}${bookings.length ? cancelButton(bookings[0], past) : remove}</li>`;
+}
+
+// Plain text for the location's manager: every booked time that day across all of its links.
+function dayPlan(store, day) {
+  const slots = data.links.filter((l) => l.store === store).flatMap((l) => l.slots)
+    .filter((s) => dateKey.format(new Date(s.start)) === day).sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+  const who = (b) => `${b.firstName} ${b.lastName}, ${phone(b.phone)}`;
+  const lines = [];
+  let count = 0;
+  for (const slot of slots) {
+    const bookings = bookingsBySlot[slot.id] || [];
+    if (!bookings.length) continue;
+    const time = timeFormat.format(new Date(slot.start));
+    if (slot.seats > 1) lines.push(`${time} group, interview in this order:`, ...bookings.map((b, i) => `${i + 1}. ${who(b)}`));
+    else lines.push(`${time}  ${who(bookings[0])}`);
+    count += bookings.length;
+  }
+  if (!count) return null;
+  return [`Interviews ${dayFormat.format(new Date(slots[0].start))} – ${storeName(store)}`, ...lines, `${count} interview${count === 1 ? '' : 's'}`].join('\n');
+}
+
+// What to paste into a message to the applicant: plain text, link at the end so it stays tappable.
+const inviteMessage = (url) => `Thanks for applying! Pick a time for your interview here: ${url}`;
+
+function linkHtml(link, now) {
+  const url = `${location.origin}/i/${link.id}`;
+  const booked = link.slots.reduce((sum, s) => sum + (bookingsBySlot[s.id]?.length || 0), 0);
+  const seats = link.slots.reduce((sum, s) => sum + s.seats, 0);
+  const days = new Map();
+  for (const slot of link.slots) {
+    const key = dateKey.format(new Date(slot.start));
+    if (!days.has(key)) days.set(key, []);
+    days.get(key).push(slot);
+  }
+  const labels = [...days.values()].map((slots) => dayFormat.format(new Date(slots[0].start)));
+  return `<article class="panel" data-link-id="${esc(link.id)}">
+    <div class="panel-head">
+      <div><div class="eyebrow">${esc(storeName(link.store))} · ${link.kind === 'group' ? 'Group' : 'One-on-one'}</div><h2>${esc(labels.join(', ') || 'No times')}</h2></div>
+      <span class="pill">${booked} of ${seats} booked</span>
+    </div>
+    <div class="url-row">
+      <input type="text" readonly value="${esc(url)}" aria-label="Booking link">
+      <button class="btn ghost small" type="button" data-copy-link>Copy link</button>
+      <button class="btn ghost small" type="button" data-add-days>Add days</button>
+    </div>
+    <div class="message"><p>${esc(inviteMessage(url))}</p><button class="btn small" type="button" data-copy-message>Copy invite message</button></div>
+    ${[...days].map(([key, slots]) => `<div style="display:grid;gap:6px">
+      <div class="day-head"><h3>${esc(dayFormat.format(new Date(slots[0].start)))}</h3>
+        ${dayPlan(link.store, key) ? `<button class="btn ghost small" type="button" data-copy-day="${key}">Copy day plan</button>` : ''}</div>
+      <ul class="slots">${slots.map((slot) => slotHtml(slot, bookingsBySlot[slot.id] || [], now)).join('')}</ul>
+    </div>`).join('')}
+  </article>`;
+}
+
+function renderLinks() {
+  const now = Date.now();
+  bookingsBySlot = {};
+  for (const b of data.bookings.filter((b) => !b.cancelledAt).sort((a, b) => a.createdAt.localeCompare(b.createdAt))) (bookingsBySlot[b.slotId] ||= []).push(b);
+  const isPast = (link) => link.slots.every((s) => Date.parse(s.start) < now);
+  const newestFirst = [...data.links].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const past = newestFirst.filter(isPast);
+  $('links').innerHTML = newestFirst.filter((l) => !isPast(l)).map((l) => linkHtml(l, now)).join('')
+    + (past.length ? `<details class="past"><summary>Past links (${past.length})</summary>${past.map((l) => linkHtml(l, now)).join('')}</details>` : '');
+  $('emptyState').hidden = data.links.length > 0;
+}
+
+async function copyText(text, button) {
+  const label = button.textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    // No clipboard API over plain http on another device: copy through a hidden field instead.
+    const field = Object.assign(document.createElement('textarea'), { value: text });
+    document.body.append(field);
+    field.select();
+    document.execCommand('copy');
+    field.remove();
+  }
+  button.textContent = 'Copied';
+  setTimeout(() => { button.textContent = label; }, 2000);
+}
+
+// ---- Settings
+const textFields = {
+  page: [['host', 'Brand line'], ['title', 'Title'], ['duration', 'Length shown'], ['bookedNote', 'Note after booking'], ['noLink', 'Page without a link'], ['footer', 'Footer']],
+  email: [
+    ['senderName', 'Sender name'], ['greeting', 'Greeting'], ['note', 'Note'], ['signature', 'Signature'], ['calendarTitle', 'Calendar entry title'],
+    ['bookedSubject', 'Booked: subject'], ['bookedLead', 'Booked: first line'], ['bookedButton', 'Booked: button'],
+    ['movedSubject', 'Moved: subject'], ['movedLead', 'Moved: first line'], ['movedButton', 'Moved: button'],
+    ['cancelledSubject', 'Cancelled: subject'], ['cancelledLead', 'Cancelled: first line'], ['cancelledButton', 'Cancelled: button']
+  ]
+};
+const ruleFields = [
+  ['cutoffHours', 'Booking closes', 'hours before the time'],
+  ['maxDaysAhead', 'Show times up to', 'days ahead (0 = all times on the link)'],
+  ['calendarMinutes', 'Calendar entry', 'minutes'],
+  ['maxBookingsPerHour', 'Bookings per device', 'per hour (against spam)'],
+  ['retentionDays', 'Delete bookings', 'days after the interview']
+];
+
+function storeRowHtml(key = '', s = { name: '', address: '', note: '' }) {
+  return `<div class="store-row" data-key="${esc(key)}">
+    <label>Name<input type="text" name="name" value="${esc(s.name)}" maxlength="40"></label>
+    <label>Address<input type="text" name="address" value="${esc(s.address)}" maxlength="120"></label>
+    <label>Note in the email<input type="text" name="note" value="${esc(s.note)}" maxlength="200" placeholder="e.g. Use the side door."></label>
+    <button type="button" class="btn ghost small" data-remove-store>Remove</button>
+  </div>`;
+}
+
+function renderSettings() {
+  const { settings, defaults, placeholders } = data;
+  const textRow = (section, [key, label]) => `<div class="text-row">
+      <label>${esc(label)}<input type="text" data-section="${section}" data-key="${key}" value="${esc(settings[section][key])}"></label>
+      <button type="button" class="btn ghost small" data-reset="${section}.${key}" title="${esc(defaults[section][key])}">Reset</button></div>`;
+  $('settingsFields').innerHTML = `
+    <section class="settings-group"><h3>Locations</h3>
+      <div id="storeRows" style="display:grid;gap:10px">${Object.entries(settings.stores).map(([k, s]) => storeRowHtml(k, s)).join('')}</div>
+      <div><button type="button" class="btn ghost small" id="addStore">+ Add location</button></div></section>
+    <section class="settings-group"><h3>Rules</h3>
+      ${ruleFields.map(([key, label, unit]) => `<label class="rule">${esc(label)}<input type="number" data-section="rules" data-key="${key}" value="${settings.rules[key]}" min="0" step="1" inputmode="numeric"><span>${esc(unit)}</span></label>`).join('')}</section>
+    <section class="settings-group"><h3>Booking page</h3>${textFields.page.map((f) => textRow('page', f)).join('')}</section>
+    <section class="settings-group"><h3>Emails</h3>
+      <p class="note">Placeholders: ${placeholders.map((p) => `<code>{${esc(p)}}</code>`).join(' ')}</p>
+      ${textFields.email.map((f) => textRow('email', f)).join('')}</section>`;
+}
+
+function collectSettings() {
+  const result = { stores: [], rules: {}, page: {}, email: {} };
+  for (const row of document.querySelectorAll('#storeRows .store-row')) {
+    result.stores.push({ key: row.dataset.key || undefined, ...Object.fromEntries([...row.querySelectorAll('input')].map((i) => [i.name, i.value])) });
+  }
+  for (const input of document.querySelectorAll('#settingsFields [data-section]')) {
+    const { section, key } = input.dataset;
+    // A text left at its default is saved blank, so a later change to the default still reaches it.
+    result[section][key] = section !== 'rules' && input.value.trim() === data.defaults[section][key] ? '' : input.value;
+  }
+  return result;
+}
+
+// ---- Events
+$('loginForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  $('loginError').hidden = true;
+  try {
+    await api('login', { password: $('password').value });
+    $('password').value = '';
+    $('login').hidden = true;
+    await load();
+  } catch (err) {
+    $('loginError').textContent = err.message;
+    $('loginError').hidden = false;
+  }
+});
+$('logout').addEventListener('click', async () => { await api('logout', {}).catch(() => {}); showLogin(); });
+$('refresh').addEventListener('click', () => { feedback(); load(); });
+$('newLink').addEventListener('click', () => openForm());
+$('cancelLink').addEventListener('click', () => { $('linkForm').hidden = true; formLinkId = null; });
+$('linkForm').addEventListener('submit', saveForm);
+$('addDay').addEventListener('click', () => $('days').insertAdjacentHTML('beforeend', dayRowHtml()));
+$('days').addEventListener('click', (event) => {
+  if (event.target.closest('[data-remove-day]') && document.querySelectorAll('#days .day-row').length > 1) event.target.closest('.day-row').remove();
+});
+$('kind').addEventListener('click', (event) => {
+  const button = event.target.closest('button');
+  if (button && button.dataset.kind !== kind) setKind(button.dataset.kind);
+});
+
+$('links').addEventListener('click', async (event) => {
+  const card = event.target.closest('[data-link-id]');
+  if (!card) return;
+  const link = data.links.find((l) => l.id === card.dataset.linkId);
+  const url = card.querySelector('.url-row input').value;
+  const target = event.target.closest('button');
+  if (!target) return;
+  if (target.matches('[data-copy-link]')) copyText(url, target);
+  if (target.matches('[data-copy-message]')) copyText(inviteMessage(url), target);
+  if (target.matches('[data-copy-day]')) copyText(dayPlan(link.store, target.dataset.copyDay), target);
+  if (target.matches('[data-add-days]')) openForm(link);
+  try {
+    if (target.matches('[data-remove-slot]')) {
+      await api('slots/remove', { linkId: link.id, slotId: target.dataset.removeSlot });
+      await load();
+    }
+    if (target.matches('[data-cancel]')) {
+      // Two taps: the first turns the button into a confirmation, so a slip can't cancel anyone.
+      if (target.dataset.armed !== '1') {
+        target.dataset.armed = '1';
+        target.textContent = `Yes, cancel ${target.dataset.name}`;
+        return;
+      }
+      target.disabled = true;
+      await api('bookings/cancel', { token: target.dataset.cancel });
+      await load();
+      feedback(`Booking of ${target.dataset.name} cancelled. If email is set up, they get the cancellation email with a link to pick a new time.`);
+    }
+  } catch (err) {
+    feedback(err.message, false);
+  }
+});
+
+$('openSettings').addEventListener('click', () => {
+  renderSettings();
+  $('settingsError').hidden = true;
+  $('settings').hidden = false;
+  $('settings').scrollIntoView({ block: 'start', behavior: 'smooth' });
+});
+$('closeSettings').addEventListener('click', () => { $('settings').hidden = true; });
+$('settings').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = $('saveSettings');
+  button.disabled = true;
+  $('settingsError').hidden = true;
+  try {
+    data = await api('settings', collectSettings());
+    renderSettings();
+    renderStoreOptions();
+    renderLinks();
+    $('hostName').textContent = data.settings.page.host;
+    feedback('Settings saved. The booking page uses them right away.');
+  } catch (err) {
+    $('settingsError').textContent = err.message;
+    $('settingsError').hidden = false;
+  } finally {
+    button.disabled = false;
+  }
+});
+$('settingsFields').addEventListener('click', (event) => {
+  if (event.target.closest('#addStore')) {
+    $('storeRows').insertAdjacentHTML('beforeend', storeRowHtml());
+    document.querySelector('#storeRows .store-row:last-child input').focus();
+  }
+  if (event.target.closest('[data-remove-store]')) event.target.closest('.store-row').remove();
+  const reset = event.target.closest('[data-reset]');
+  if (reset) {
+    const [section, key] = reset.dataset.reset.split('.');
+    const input = document.querySelector(`#settingsFields [data-section="${section}"][data-key="${key}"]`);
+    input.value = data.defaults[section][key];
+    input.focus();
+  }
+});
+
+load().then(() => { if ($('app').hidden && $('login').hidden) showLogin(); });
+</script>
+</body>
+</html>

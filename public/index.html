@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Job Interview | Demo Company</title>
+<meta name="description" content="Book a job interview. Pick a day and time.">
+<meta name="theme-color" content="#ffffff">
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#5c5f63; --line:#e3e3e3; --bg:#f6f6f6; --card:#fff;
+    --accent:#1d4ed8; --accent-tint:#eff6ff; --accent-ink:#1e40af; --err:#b42318;
+    --r:8px;
+  }
+  *{box-sizing:border-box;margin:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100svh;}
+  button,input{font:inherit;color:inherit;}
+  button{cursor:pointer;}
+  [hidden]{display:none !important;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .card{background:var(--card);max-width:1060px;margin:0 auto;min-height:100svh;}
+  .info{padding:24px 20px 20px;border-bottom:1px solid var(--line);}
+  .host{color:var(--muted);font-weight:600;font-size:.9375rem;}
+  h1{font-size:1.5rem;line-height:1.25;margin-top:4px;}
+  .meta{list-style:none;padding:0;margin-top:14px;display:grid;gap:8px;color:var(--muted);font-weight:600;font-size:.9375rem;}
+  .meta li{display:flex;gap:10px;align-items:flex-start;}
+  .meta svg{flex:none;width:20px;height:20px;margin-top:1px;}
+
+  .step{padding:24px 20px 32px;}
+  h2{font-size:1.25rem;line-height:1.3;}
+  h2:focus{outline:none;}
+
+  .cal{margin-top:18px;max-width:380px;}
+  .cal-head{display:flex;align-items:center;justify-content:center;gap:12px;}
+  .cal-head b{min-width:150px;text-align:center;font-weight:500;}
+  .nav{width:44px;height:44px;border-radius:50%;border:0;background:var(--accent-tint);color:var(--accent);display:grid;place-items:center;}
+  .nav:disabled{background:none;color:#b9b9b9;cursor:default;}
+  .nav svg{width:18px;height:18px;}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:14px;text-align:center;}
+  .wd{font-size:.75rem;color:var(--muted);text-transform:uppercase;padding-bottom:4px;}
+  .d{aspect-ratio:1;max-width:48px;width:100%;margin:0 auto;border-radius:50%;border:0;background:none;display:grid;place-items:center;color:#9a9a9a;position:relative;font-size:1rem;}
+  .d.open{background:var(--accent-tint);color:var(--accent-ink);font-weight:700;}
+  .d.open[aria-pressed="true"]{background:var(--accent);color:#fff;font-size:1.1875rem;}
+  .d.today::after{content:"";position:absolute;bottom:6px;width:4px;height:4px;border-radius:50%;background:currentColor;}
+  .d:disabled{cursor:default;}
+  .tz{margin-top:16px;font-size:.875rem;color:var(--muted);}
+
+  .times{margin-top:28px;}
+  .times h3{font-size:1rem;font-weight:500;}
+  .slots{display:grid;gap:10px;margin-top:12px;}
+  .slot{width:100%;min-height:52px;border:1px solid var(--accent);color:var(--accent-ink);background:#fff;border-radius:var(--r);padding:8px 12px;font-weight:700;display:grid;justify-items:center;align-content:center;line-height:1.3;}
+  .slot small{font-weight:400;font-size:.8125rem;color:var(--muted);}
+  .slot:disabled{border-color:var(--line);color:#9a9a9a;background:var(--bg);cursor:default;}
+  .slot:disabled small{color:#9a9a9a;}
+  .state{color:var(--muted);margin-top:16px;}
+
+  .back{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--accent);display:grid;place-items:center;margin-bottom:16px;}
+  .back svg{width:20px;height:20px;}
+  form{margin-top:20px;display:grid;gap:18px;max-width:440px;}
+  label{display:block;font-weight:600;font-size:.9375rem;margin-bottom:6px;}
+  input{width:100%;height:48px;padding:0 12px;border:1px solid #8a8d91;border-radius:var(--r);background:#fff;font-size:1rem;} /* 3.4:1 so the field edge is visible */
+  input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+  input[aria-invalid="true"]{border-color:var(--err);}
+  .err,.form-err{color:var(--err);font-size:.875rem;margin-top:6px;}
+  .btn{min-height:48px;padding:0 24px;border-radius:24px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;font-size:1.1875rem;justify-self:start;}
+  .btn.ghost{background:#fff;color:var(--accent-ink);}
+  .btn:disabled{opacity:.6;cursor:default;}
+  .group-note{margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:var(--r);font-size:.9375rem;}
+
+  .done-mark{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;margin-bottom:12px;}
+  .done-mark svg{width:22px;height:22px;}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+  .keep{margin-top:14px;color:var(--muted);font-size:.875rem;}
+
+  footer{padding:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.8125rem;}
+
+  @media (min-width:900px){
+    body{padding:48px 24px;}
+    .card{min-height:0;display:grid;grid-template-columns:320px 1fr;border:1px solid var(--line);border-radius:var(--r);box-shadow:0 1px 8px rgba(0,0,0,.08);}
+    .info{border-bottom:0;border-right:1px solid var(--line);padding:28px 24px;}
+    .step{padding:28px 32px 36px;}
+    #pickStep:not([hidden]){display:grid;grid-template-columns:minmax(300px,380px) 1fr;column-gap:32px;align-content:start;}
+    #pickStep h2{grid-column:1 / -1;}
+    .times{margin-top:18px;}
+    footer{grid-column:1 / -1;}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .slot,.d,.nav,.btn{transition:background-color 120ms,color 120ms,border-color 120ms;}
+  }
+  @media (hover:hover){
+    .slot:not(:disabled):hover{border-width:2px;padding:7px 11px;}
+    .d.open:not([aria-pressed="true"]):hover{background:#dbeafe;}
+    .btn:not(:disabled):hover{background:var(--accent-ink);border-color:var(--accent-ink);}
+    .btn.ghost:not(:disabled):hover{background:var(--accent-tint);color:var(--accent-ink);}
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <aside class="info">
+    <button type="button" class="back" id="backBtn" aria-label="Back to times" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+    <p class="host" id="host">Demo Company</p>
+    <h1 id="title">Job Interview</h1>
+    <ul class="meta">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="durLine">15 min</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="addrLine"></span></li>
+      <li id="whenLine" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><span></span></li>
+      <li id="tzLine" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span>Pacific Time</span></li>
+    </ul>
+  </aside>
+
+  <main>
+    <section class="step" id="pickStep" aria-labelledby="pickHeading">
+      <h2 id="pickHeading" tabindex="-1">Select a Date &amp; Time</h2>
+      <div class="cal" id="cal">
+        <div class="cal-head">
+          <button type="button" class="nav" id="prevMonth" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <b id="monthLabel" aria-live="polite"></b>
+          <button type="button" class="nav" id="nextMonth" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="grid" id="calGrid"></div>
+        <p class="tz">Times are Pacific Time.</p>
+      </div>
+      <div class="times" id="times" aria-live="polite"><p class="state">Loading times…</p></div>
+    </section>
+
+    <section class="step" id="detailsStep" aria-labelledby="detailsHeading" hidden>
+      <h2 id="detailsHeading" tabindex="-1">Enter Details</h2>
+      <form id="bookForm" novalidate>
+        <p style="display:none;"><label>Leave this empty <input name="website" tabindex="-1" autocomplete="off"></label></p>
+        <div id="personFields" style="display:grid;gap:18px;">
+          <div><label for="firstName">First name</label><input type="text" id="firstName" name="firstName" autocomplete="given-name" autocapitalize="words" enterkeyhint="next" required></div>
+          <div><label for="lastName">Last name</label><input type="text" id="lastName" name="lastName" autocomplete="family-name" autocapitalize="words" enterkeyhint="next" required></div>
+          <div><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="next" required></div>
+          <div><label for="phone">Cell phone</label><input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" enterkeyhint="done" required></div>
+        </div>
+        <button type="submit" class="btn" id="bookBtn">Schedule Interview</button>
+        <p class="form-err" id="formErr" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <section class="step" id="bookedStep" aria-labelledby="bookedHeading" hidden>
+      <div class="done-mark" id="doneMark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2 id="bookedHeading" tabindex="-1">You’re scheduled</h2>
+      <p class="group-note" id="bookedNote" hidden></p>
+      <div class="actions" id="bookedActions">
+        <button type="button" class="btn" id="changeBtn">Change time</button>
+        <button type="button" class="btn ghost" id="cancelBtn">Cancel interview</button>
+      </div>
+      <p class="keep" id="keepNote">Bookmark this page to change or cancel later.</p>
+    </section>
+  </main>
+
+  <footer><span id="footer">Demo Company</span></footer>
+</div>
+
+<script>
+  const TZ = 'America/Los_Angeles';
+  const dayFmt = new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'long', month: 'long', day: 'numeric' });
+  const keyFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+  const timeFmt = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' });
+  const fullDayFmt = new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const monthFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' });
+  const $ = (id) => document.getElementById(id);
+  const dayKey = (iso) => keyFmt.format(new Date(iso)); // YYYY-MM-DD in Pacific time
+  const time = (iso) => timeFmt.format(new Date(iso)).replace(' ', '').toLowerCase(); // 10:00am
+
+  // Texts from the settings blob. The HTML carries the defaults until /api/page answers.
+  const texts = {
+    host: $('host').textContent, title: $('title').textContent, duration: $('durLine').textContent, footer: $('footer').textContent,
+    bookedNote: 'Please bring your resume.', noLink: 'Use the link from your message to book an interview.'
+  };
+  function applyTexts(page) {
+    Object.assign(texts, page);
+    for (const id of ['host', 'title', 'footer']) $(id).textContent = texts[id];
+    $('durLine').textContent = texts.duration;
+    document.title = `${texts.title} | ${texts.host}`;
+  }
+
+  let token = new URLSearchParams(location.search).get('t');
+  let linkId = location.pathname.match(/^\/i\/([\w-]+)/)?.[1] || null;
+  let link = null; // { id, kind, storeName, address } once loaded
+  let slots = [];
+  let month = null; // [year, monthIndex]
+  let day = null;   // YYYY-MM-DD
+  let picked = null;
+  let reschedule = false;
+
+  async function api(path, body) {
+    const res = await fetch('/api/' + path, body
+      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+      : undefined);
+    const data = await res.json().catch(() => ({ error: 'Something went wrong. Try again in a minute.' }));
+    if (!res.ok) throw Object.assign(new Error(data.error), { data, status: res.status });
+    return data;
+  }
+
+  function show(step) {
+    for (const id of ['pickStep', 'detailsStep', 'bookedStep']) $(id).hidden = id !== step;
+    $('backBtn').hidden = step !== 'detailsStep';
+    if (step === 'pickStep') setInfo(null);
+    $(step).querySelector('h2').focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+
+  // Left panel: the link's store until a time is picked, then that slot's or booking's details.
+  // Group times look exactly like one-on-one ones: applicants aren't told about the group or its length.
+  function setInfo(b) {
+    const place = b || link;
+    $('addrLine').parentElement.hidden = !place;
+    if (place) $('addrLine').textContent = `${place.storeName}, ${place.address}`;
+    $('whenLine').hidden = $('tzLine').hidden = !b;
+    if (b) $('whenLine').querySelector('span').textContent = `${time(b.start)}, ${fullDayFmt.format(new Date(b.start))}`;
+  }
+
+  function showState(text) {
+    $('cal').hidden = true;
+    $('pickHeading').textContent = 'Book an Interview';
+    $('times').innerHTML = '<p class="state"></p>';
+    $('times').firstChild.textContent = text;
+  }
+
+  async function loadSlots() {
+    if (!linkId) return showState(texts.noLink);
+    try {
+      ({ link, slots } = await api('slots?link=' + encodeURIComponent(linkId)));
+    } catch (err) {
+      return showState(err.status === 404 ? err.message : 'Couldn’t load interview times. Refresh the page to try again.');
+    }
+    $('cal').hidden = false;
+    if (!$('pickStep').hidden) setInfo(null); // other steps show the picked time or the booking
+    const openDays = [...new Set(slots.filter((s) => s.seatsLeft > 0).map((s) => dayKey(s.start)))];
+    if (!openDays.includes(day)) day = openDays[0] || null;
+    const anchor = day || dayKey(new Date().toISOString());
+    month = [Number(anchor.slice(0, 4)), Number(anchor.slice(5, 7)) - 1];
+    renderCalendar();
+    renderTimes();
+  }
+
+  function renderCalendar() {
+    const [y, m] = month;
+    const openDays = new Set(slots.filter((s) => s.seatsLeft > 0).map((s) => dayKey(s.start)));
+    const today = dayKey(new Date().toISOString());
+    const pad = (n) => String(n).padStart(2, '0');
+    const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
+    const count = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    $('monthLabel').textContent = monthFmt.format(new Date(Date.UTC(y, m, 1)));
+    const cells = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((w) => `<span class="wd" aria-hidden="true">${w}</span>`);
+    for (let i = 0; i < first; i++) cells.push('<span></span>');
+    for (let d = 1; d <= count; d++) {
+      const key = `${y}-${pad(m + 1)}-${pad(d)}`;
+      const open = openDays.has(key);
+      const label = dayFmt.format(new Date(`${key}T12:00:00Z`)) + (open ? ', times open' : ', no times');
+      cells.push(`<button type="button" class="d${open ? ' open' : ''}${key === today ? ' today' : ''}" data-day="${key}" aria-label="${label}" aria-pressed="${key === day}"${open ? '' : ' disabled'}>${d}</button>`);
+    }
+    $('calGrid').innerHTML = cells.join('');
+    const monthKey = `${y}-${pad(m + 1)}`;
+    const keys = [...openDays].map((k) => k.slice(0, 7));
+    $('prevMonth').disabled = !keys.some((k) => k < monthKey);
+    $('nextMonth').disabled = !keys.some((k) => k > monthKey);
+  }
+
+  function renderTimes() {
+    const box = $('times');
+    if (!slots.some((s) => s.seatsLeft > 0)) {
+      box.innerHTML = '<p class="state">No interview times are open right now. Check back soon.</p>';
+      return;
+    }
+    if (!day) { box.innerHTML = '<p class="state">Pick a day to see times.</p>'; return; }
+    const daySlots = slots.filter((s) => dayKey(s.start) === day);
+    box.innerHTML = '<h3></h3><div class="slots"></div>';
+    box.querySelector('h3').textContent = dayFmt.format(new Date(daySlots[0].start));
+    for (const slot of daySlots) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'slot';
+      b.disabled = slot.seatsLeft === 0;
+      const sub = slot.seatsLeft === 0 ? 'Taken' : '';
+      b.innerHTML = sub ? '<span></span><small></small>' : '<span></span>';
+      b.querySelector('span').textContent = time(slot.start);
+      if (sub) b.querySelector('small').textContent = sub;
+      b.addEventListener('click', () => pick(slot));
+      box.querySelector('.slots').append(b);
+    }
+  }
+
+  $('calGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('.d.open');
+    if (!btn) return;
+    day = btn.dataset.day;
+    renderCalendar();
+    renderTimes();
+    $('calGrid').querySelector(`[data-day="${day}"]`).focus();
+    if (matchMedia('(max-width: 899px)').matches) $('times').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
+  for (const [id, step] of [['prevMonth', -1], ['nextMonth', 1]]) {
+    $(id).addEventListener('click', () => {
+      const d = new Date(Date.UTC(month[0], month[1] + step, 1));
+      month = [d.getUTCFullYear(), d.getUTCMonth()];
+      renderCalendar();
+    });
+  }
+
+  function pick(slot) {
+    picked = slot;
+    setInfo(slot);
+    $('personFields').hidden = reschedule; // name/phone/email are already on the booking
+    $('bookBtn').textContent = reschedule ? 'Move My Interview Here' : 'Schedule Interview';
+    $('detailsHeading').textContent = reschedule ? 'Confirm New Time' : 'Enter Details';
+    $('formErr').hidden = true;
+    show('detailsStep');
+  }
+  $('backBtn').addEventListener('click', () => show('pickStep'));
+
+  function showFieldErrors(fields = {}) {
+    for (const name of ['firstName', 'lastName', 'email', 'phone']) {
+      const input = $(name);
+      input.parentElement.querySelector('.err')?.remove();
+      input.removeAttribute('aria-invalid');
+      input.removeAttribute('aria-describedby');
+      if (fields[name]) {
+        const msg = document.createElement('p');
+        msg.className = 'err';
+        msg.id = name + 'Err';
+        msg.textContent = fields[name];
+        input.after(msg);
+        input.setAttribute('aria-invalid', 'true');
+        input.setAttribute('aria-describedby', msg.id);
+      }
+    }
+    const first = Object.keys(fields)[0];
+    if (first) $(first).focus();
+  }
+
+  $('bookForm').addEventListener('input', (e) => {
+    e.target.removeAttribute('aria-invalid');
+    e.target.parentElement.querySelector('.err')?.remove();
+  });
+
+  $('bookForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('bookBtn');
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Booking…';
+    $('formErr').hidden = true;
+    try {
+      const body = Object.fromEntries(new FormData(e.target));
+      const { booking } = await api('book', { ...body, slotId: picked.id, token });
+      showFieldErrors();
+      token = booking.token;
+      history.replaceState(null, '', '?t=' + token);
+      showBooking(booking, true);
+    } catch (err) {
+      showFieldErrors(err.data?.fields);
+      $('formErr').textContent = err.message;
+      $('formErr').hidden = false;
+      if (err.status === 409) loadSlots();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  });
+
+  function showBooking(booking, justBooked) {
+    reschedule = false;
+    if (booking.link) linkId = booking.link; // "Change time" shows the times of the link it was booked from
+    setInfo(booking);
+    $('bookedHeading').textContent = booking.cancelled ? 'Interview cancelled' : (justBooked ? 'You’re scheduled' : 'Your interview');
+    $('doneMark').hidden = booking.cancelled;
+    $('bookedNote').hidden = booking.cancelled;
+    $('bookedNote').textContent = texts.bookedNote;
+    $('bookedActions').hidden = !booking.changeable;
+    $('keepNote').hidden = !booking.changeable;
+    show('bookedStep');
+    if (booking.cancelled) {
+      token = null;
+      history.replaceState(null, '', linkId ? '/i/' + linkId : location.pathname);
+      $('bookedActions').hidden = false;
+      $('changeBtn').textContent = 'Pick a new time';
+      $('cancelBtn').hidden = true;
+    } else {
+      $('changeBtn').textContent = 'Change time';
+      $('cancelBtn').hidden = false;
+    }
+  }
+
+  $('changeBtn').addEventListener('click', () => {
+    reschedule = Boolean(token);
+    $('pickHeading').textContent = reschedule ? 'Pick a New Time' : 'Select a Date & Time';
+    show('pickStep');
+    loadSlots();
+  });
+
+  $('cancelBtn').addEventListener('click', async () => {
+    if (!confirm('Cancel your interview? Your spot will go to someone else.')) return;
+    const btn = $('cancelBtn');
+    btn.disabled = true;
+    try {
+      showBooking((await api('cancel', { token })).booking);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  setInfo(null);
+  api('page').then(({ page }) => applyTexts(page)).catch(() => {}) // keep the built-in texts if this fails
+    .then(() => token
+      ? api('booking?t=' + encodeURIComponent(token))
+        .then(({ booking }) => showBooking(booking))
+        .catch(() => { token = null; history.replaceState(null, '', location.pathname); loadSlots(); })
+      : loadSlots());
+</script>
+</body>
+</html>
